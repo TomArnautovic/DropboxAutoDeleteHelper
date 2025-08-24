@@ -88,7 +88,7 @@ https://www.dropbox.com/* → restricts operation to Dropbox only.
 No data leaves your browser. Nothing is collected, stored, or transmitted.
 
 🧩 Project Structure
-.
+ddc-extension/
 ├── manifest.json
 ├── popup.html
 ├── popup.js
@@ -122,10 +122,10 @@ Single-item groups (nothing to delete)
 Modal confirm presence/absence
 
 Quick dev cycle
+# Edit content.js or popup.js
+# Then reload your extension and refresh Dropbox
+chrome://extensions → Reload
 
-Edit content.js or popup.js.
-
-Go to chrome://extensions → Reload your unpacked extension.
 
 Hard-refresh the Dropbox tab and watch Console logs ([DDC]).
 
