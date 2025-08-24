@@ -1,77 +1,91 @@
-Duplicate Cleaner for Dropbox (Unofficial)
+Dropbox Duplicate Cleaner (Unofficial)
 
-A lightweight Chrome extension that helps you clean up duplicate files on the Dropbox → Duplicates page by:
+A lightweight Chrome extension to help clean up duplicate files on Dropbox’s Duplicates page.
 
-Expanding all groups
+It automates the manual workflow by:
+
+Expanding all duplicate groups
 
 Selecting all duplicates except the first (keeper)
 
 Bulk-deleting the selected files with modal confirmation
 
-Not affiliated with or endorsed by Dropbox. Actions run only in your browser on dropbox.com.
+⚠️ Not affiliated with or endorsed by Dropbox.
+All actions run only in your browser on dropbox.com
+.
 
 ✨ Features
 
-One-click Expand All: opens every accordion/group on the Duplicates page.
+Expand All → Opens every accordion/group on the Duplicates page.
 
-Tick All: selects every checkbox except the first item in each group (keeps one copy).
+Tick All → Selects every checkbox except the first in each group (keeps one copy).
 
-Bulk Delete: clicks each group’s Delete selected and confirms the modal.
+Bulk Delete → Clicks “Delete selected” for each group and confirms the modal.
 
-Stays within the Dropbox web UI—no servers, no analytics, no tracking.
+Safe & local → Runs entirely within the Dropbox web UI—no servers, analytics, or tracking.
 
-⚠️ Safety
+⚠️ Safety Notes
 
-This tool deletes files you select on the Dropbox Duplicates page. Deletions go to Dropbox Deleted files/Trash according to your Dropbox plan/policy, but treat deletions as irreversible.
+Deletions move to Dropbox’s Deleted files / Trash according to your plan/policy. Treat them as irreversible.
 
 Always scan selections before running Bulk Delete.
 
-UI selectors may change if Dropbox updates their site; if something stops working, please open an issue.
+Dropbox may change their UI. If selectors stop working, please open an issue
+.
 
-📥 Install (Developer / Unpacked)
+📥 Install (Developer / Unpacked Mode)
 
-Clone or download this repo.
+Since this extension isn’t published to the Chrome Web Store yet, you can install it manually:
 
-Open chrome://extensions and enable Developer mode.
+Clone or download this repository.
 
-Click Load unpacked and select the project folder.
+git clone https://github.com/TomArnautovic/DropboxAutoDeleteHelper.git
+
+
+Or click Code → Download ZIP and extract it.
+
+Open chrome://extensions/ in Chrome.
+
+Enable Developer mode (toggle in the top right).
+
+Click Load unpacked and select the project folder (the one containing manifest.json).
 
 The extension icon will appear in your toolbar.
-
-A Chrome Web Store link will be added here once published.
 
 🚀 Usage
 
 Open the Dropbox Duplicates page:
-https://www.dropbox.com/find_duplicates?path=%2F
+👉 https://www.dropbox.com/find_duplicates?path=%2F
 
-Click the extension icon to open the popup.
+Click the extension icon in your Chrome toolbar.
 
-Click Expand All and wait until everything is expanded.
+Use the popup buttons in order:
 
-Click Tick All to select duplicates (skips the first row in each group).
+Expand All → Wait until all groups are open (Console shows EXPAND: done).
 
-Click Bulk Delete. The extension will:
+Tick All → Selects all but the first file in each group.
 
-Click Delete selected for the current group
+Bulk Delete → Runs through each group:
 
-Auto-confirm the Delete button in the modal
+Clicks “Delete selected”
 
-Move to the next group
+Confirms the modal
 
-You’ll see diagnostic logs in the DevTools Console prefixed with [DDC].
+Moves on to the next group
+
+Diagnostic logs appear in DevTools Console ([DDC] ...).
 
 🔑 Permissions
 
-activeTab – to interact with the current Dropbox tab when you click the popup.
+activeTab → interact with the Dropbox tab you click from.
 
-scripting – to inject the content script if needed.
+scripting → inject the content script.
 
-storage – to remember simple UI preferences (if used).
+storage → remember simple UI preferences (if enabled).
 
-Host: https://www.dropbox.com/* – restricts the script to Dropbox.
+https://www.dropbox.com/* → restricts operation to Dropbox only.
 
-No data is sent anywhere—everything runs locally in your browser.
+No data leaves your browser. Nothing is collected, stored, or transmitted.
 
 🧩 Project Structure
 .
@@ -85,19 +99,19 @@ No data is sent anywhere—everything runs locally in your browser.
     └── icon-128.png
 
 
-content.js – logic for expanding groups, ticking checkboxes, and bulk deletion (modal handling).
+content.js → logic for expanding, ticking, and bulk deletion (incl. modal handling).
 
-popup.html/js – simple UI with three buttons: Expand All, Tick All, Bulk Delete.
+popup.html/js → simple popup UI with 3 buttons.
 
-manifest.json – Chrome MV3 config (minimal permissions, host-scoped).
+manifest.json → Chrome MV3 config with minimal permissions.
 
 🛠️ Development
 
-Keep selectors resilient to UI changes (favor roles/aria attributes and visible text: “Delete selected”, “Delete”).
+Avoid inline scripts (MV3 CSP).
 
-Avoid inline scripts in HTML (MV3 CSP).
+Prefer resilient selectors (roles, aria attributes, visible text).
 
-Test flows:
+Test with:
 
 Groups already expanded
 
@@ -109,46 +123,45 @@ Modal confirm presence/absence
 
 Quick dev cycle
 
-Edit content.js/popup.js.
+Edit content.js or popup.js.
 
 Go to chrome://extensions → Reload your unpacked extension.
 
-Hard refresh the Dropbox tab and watch the Console ([DDC] logs).
+Hard-refresh the Dropbox tab and watch Console logs ([DDC]).
 
 🧰 Troubleshooting
 
-“Couldn’t reach the page”
-Make sure you’re on a dropbox.com tab (preferably the Duplicates page) and logged in.
+“Couldn’t reach the page” → Make sure you’re on dropbox.com
+, preferably the Duplicates page.
 
-Only first group seems to act
-Click Expand All first; wait until logs show EXPAND: done. Then Tick All, then Bulk Delete.
+Only first group acts → Always click Expand All first; wait for EXPAND: done.
 
-“Modal confirm not found”
-Sometimes the modal takes a moment—try running Bulk Delete again. If Dropbox changed markup, please open an issue with the modal’s HTML snippet.
+“Modal confirm not found” → Modal may take a moment; try again. If Dropbox changed markup, please open an issue with a snippet.
 
-Nothing happens when clicking Delete selected
-Check the Console for [DDC] logs. If the button text/structure changed, please share a snippet.
+Nothing happens → Open DevTools Console and check for [DDC] logs.
 
-📝 Privacy Policy (TL;DR)
+📝 Privacy Policy
 
-This extension does not collect, store, or transmit any personal data. All actions occur locally within your browser on dropbox.com. No analytics, no third-party tracking.
-
-(If you publish to the Chrome Web Store, add a link to a hosted Privacy Policy page here.)
+This extension does not collect, store, or transmit any personal data.
+All actions occur locally within your browser on dropbox.com.
+No analytics, no tracking, no external requests.
 
 🤝 Contributing
 
-Issues and PRs are welcome! If you submit changes, please include:
+Pull requests welcome! Please include:
 
-A brief description of the fix/enhancement
+Description of your change
 
-Test notes (which flows you exercised)
+Test notes (flows you tried)
 
-Any updated selectors or fallback strategies
+Updated selectors/fallbacks if needed
 
 📄 License
 
-MIT — see LICENSE.
+MIT
+ — free to use, modify, and distribute.
 
 📣 Disclaimer
 
-This is an unofficial helper tool for the Dropbox web UI. Dropbox is a trademark of Dropbox, Inc. This project is not affiliated with, endorsed, or sponsored by Dropbox.
+This is an unofficial helper for Dropbox’s web UI.
+Dropbox® is a trademark of Dropbox, Inc. This project is not affiliated with, endorsed by, or sponsored by Dropbox.
