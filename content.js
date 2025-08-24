@@ -1,11 +1,12 @@
-// content.js — DDC Minimal v7.6 (expand / tick / single-click bulk delete)
+// content.js — DDC Minimal v7.7 (expand / tick / single-click bulk delete, no between-group delay)
+console.log('[DDC] content.js loaded on', location.href);
 
 (() => {
     if (window.top !== window) return;
     if (document.documentElement.hasAttribute('data-ddc-active')) return;
     document.documentElement.setAttribute('data-ddc-active', '1');
 
-    const VER = '7.6';
+    const VER = '7.7';
     const state = { busy: false, stop: false };
     const sleep = (ms) => new Promise(r => setTimeout(r, ms));
     const norm = (s) => (s || '').replace(/\s+/g, ' ').trim();
@@ -146,7 +147,6 @@
         el.dispatchEvent(new PointerEvent('pointerup', base));
         el.dispatchEvent(new MouseEvent('mouseup', base));
         el.dispatchEvent(new MouseEvent('click', base));
-        // NO extra el.click() — we want exactly one click path
     }
 
     // ---------- Modal detection & confirm ----------
@@ -198,7 +198,7 @@
     }
 
     function findDeleteOnDialog(layer) {
-        // Look for the primary Delete button
+        // Prefer span[data-dig-button-content] Delete
         const spans = Array.from(layer.querySelectorAll('span[data-dig-button-content="true"]')).filter(isVisible);
         for (const sp of spans) {
             const t = norm(sp.textContent);
@@ -207,6 +207,7 @@
                 if (btn) return btn;
             }
         }
+        // Fallbacks
         const btns = Array.from(layer.querySelectorAll('button,[role="button"]')).filter(isVisible);
         for (const b of btns) {
             const t = norm(b.textContent);
@@ -233,12 +234,10 @@
         }
     }
 
-    // Click the group "Delete Selected" ONCE, then wait for modal. One optional fallback click.
     async function clickDeleteSelectedAndWait(g, btn, { preModalDelayMs = 300, modalTimeoutMs = 6000 } = {}) {
         flash(btn, '3px solid magenta', 600);
         btn.scrollIntoView({ block: 'center' });
-
-        clickOnce(btn);                         // <- single click only
+        clickOnce(btn); // single click only
         await sleep(Math.max(0, Number(preModalDelayMs)));
 
         let dlg = await waitForModal(modalTimeoutMs);
@@ -266,10 +265,10 @@
         }
 
         flash(delBtn, '3px solid red', 500);
-        clickOnce(delBtn);                      // <- single click only
+        clickOnce(delBtn); // single click only
         await sleep(150);
 
-        // If dialog stubbornly remains, one Enter fallback (not a wave)
+        // If dialog stubbornly remains, one Enter fallback
         if (getActiveDialog()) {
             await pressEnterFallback(1, 120);
         }
@@ -366,7 +365,8 @@
         }
     }
 
-    async function bulkDelete({ delayMs = 1600, preModalDelayMs = 300, confirmDelayMs = 200 } = {}) {
+    // NOTE: delayMs now defaults to 0 and there is no minimum sleep between groups
+    async function bulkDelete({ delayMs = 0, preModalDelayMs = 300, confirmDelayMs = 200 } = {}) {
         if (state.busy) return;
         state.busy = true; state.stop = false;
         try {
@@ -407,7 +407,6 @@
                     preModalDelayMs,
                     modalTimeoutMs: 6000
                 });
-
                 if (!dlg) {
                     console.warn(`[DDC] Modal did not appear (group ${idx + 1})`);
                     continue;
@@ -417,7 +416,9 @@
                 if (!ok) console.warn(`[DDC] Modal confirm failed (group ${idx + 1})`);
 
                 await waitModalGoneOrRowsChanged(g, before, 20000);
-                await sleep(Math.max(200, Number(delayMs)));
+
+                // No between-group delay (only sleep if a positive delayMs is passed explicitly)
+                if (Number(delayMs) > 0) await sleep(Number(delayMs));
             }
 
             console.log('[DDC] DELETE: done');
